@@ -36,40 +36,27 @@ def display_attempts(attempts):
         print(f"  {row[1]:<8} | {status:<7} | {row[3]}")
 
 
-# TODO: Complete record_attempt(username, success)
-#   Connect to DB_NAME.
-#   INSERT a row into login_attempts with:
-#     username, success (True or False), and str(datetime.datetime.now())
-#   Commit and close the connection.
 def record_attempt(username, success):
-    pass
+    with sqlite3.connect(DB_NAME) as conn:
+        conn.execute("INSERT INTO login_attempts (username, success, attempt_date) VALUES (?, ?, ?)",
+                     (username, success, str(datetime.datetime.now())))
 
-
-# TODO: Complete get_failed_attempts(username)
-#   Connect to DB_NAME.
-#   SELECT all rows from login_attempts
-#     WHERE username matches AND success = 0
-#   Fetch all rows, close the connection, and return the list.
 def get_failed_attempts(username):
-    pass
+    with sqlite3.connect(DB_NAME) as conn:
+        return conn.execute("SELECT * FROM login_attempts WHERE username = ? AND success = 0",
+                            (username,)).fetchall()
 
-
-# TODO: Complete count_failures_per_user()
-#   Connect to DB_NAME.
-#   Execute: SELECT username, COUNT(*) FROM login_attempts
-#            WHERE success = 0 GROUP BY username
-#   Fetch all rows, close the connection, and return the list.
 def count_failures_per_user():
-    pass
+    with sqlite3.connect(DB_NAME) as conn:
+        return conn.execute("SELECT username, COUNT(*) FROM login_attempts WHERE success = 0 GROUP BY username",
+                            ).fetchall()
 
-
-# TODO: Complete delete_old_attempts(username)
-#   Connect to DB_NAME.
-#   DELETE all rows from login_attempts WHERE username matches.
-#   Commit and close the connection.
-#   Return cursor.rowcount (the number of rows deleted).
 def delete_old_attempts(username):
-    pass
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.execute(
+            "DELETE FROM login_attempts WHERE username = ?", (username,)
+        )
+        return cursor.rowcount
 
 
 # --- Main (provided) ---

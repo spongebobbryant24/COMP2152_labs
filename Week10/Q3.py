@@ -53,41 +53,36 @@ def display_events(events):
         print(f"  [{row[1]}]  {row[4]:<6}  {row[2]:<8}  {row[3]:<18}  {row[5]}")
 
 
-# TODO: Complete get_events_by_severity(severity)
-#   Connect to DB_NAME.
-#   SELECT all rows from audit_log WHERE severity matches the parameter.
-#   Fetch all rows, close the connection, and return the list.
 def get_events_by_severity(severity):
-    pass
+    with sqlite3.connect(DB_NAME) as conn:
+        return conn.execute(
+            "SELECT * FROM audit_log WHERE severity = ?", (severity,)
+        ).fetchall()
 
-
-# TODO: Complete get_recent_events(limit)
-#   Connect to DB_NAME.
-#   SELECT all rows from audit_log ORDER BY timestamp DESC LIMIT ?
-#   Use the limit parameter for the LIMIT value.
-#   Fetch all rows, close the connection, and return the list.
 def get_recent_events(limit):
-    pass
+    with sqlite3.connect(DB_NAME) as conn:
+        return conn.execute(
+            "SELECT * FROM audit_log ORDER BY timestamp DESC LIMIT ?", (limit,)
+        ).fetchall()
 
-
-# TODO: Complete count_by_severity()
-#   Connect to DB_NAME.
-#   Execute: SELECT severity, COUNT(*) FROM audit_log
-#            GROUP BY severity ORDER BY COUNT(*) DESC
-#   Fetch all rows, close the connection, and return the list.
 def count_by_severity():
-    pass
+    with sqlite3.connect(DB_NAME) as conn:
+        return conn.execute(
+            "SELECT severity, COUNT(*) FROM audit_log GROUP BY severity ORDER BY COUNT(*) DESC"
+        ).fetchall()
 
-
-# TODO: Complete safe_query(query)
-#   Connect to DB_NAME.
-#   Try to execute the query using cursor.execute(query).
-#   If successful, fetch all rows and return them.
-#   If sqlite3.Error occurs, print f"Database error: {e}" and return [].
-#   Always close the connection in a finally block.
 def safe_query(query):
-    pass
-
+    conn = sqlite3.connect(DB_NAME)
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        return rows
+    except sqlite3.Error as e:
+        print(f"Database Error: {e}")
+        return[]
+    finally:
+        conn.close()
 
 # ============================================================
 #  UNIT TESTS — fill in the test methods
