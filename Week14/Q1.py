@@ -14,13 +14,13 @@ import json
 #   If error occurs, return: {"status": 0, "headers": {}, "body": "", "error": str(e)}
 def make_request(url):
     try:
-        with urllib.request.urlopen(url) as response:
-            body = response.read().decode()
-            return {
-                "status": response.status,
-                "headers": dict(response.headers),
-                "body": body,
-            }
+        response = urllib.request.urlopen(url)
+        body = response.read().decode()
+        return {
+            "status": response.status,
+            "headers": dict(response.headers),
+            "body": body,
+        }
     except Exception as e:
         return {
             "status": 0,
@@ -29,15 +29,10 @@ def make_request(url):
             "error": str(e),
         }
     
-
-
-# TODO: Complete parse_json(body)
-#   Use json.loads(body) to convert JSON string to a dictionary
-#   If it fails (ValueError), return None
 def parse_json(body):
     try:
         return json.loads(body)
-    except ValueError:
+    except (ValueError, json.JSONDecodeError):
         return None
     
 
